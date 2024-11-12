@@ -1,3 +1,4 @@
+version: "3.7"
 services:
   mailserver:
     image: ghcr.io/docker-mailserver/docker-mailserver:latest
@@ -7,6 +8,8 @@ services:
     env_file: mailserver.env
     # More information about the mail-server ports:
     # https://docker-mailserver.github.io/docker-mailserver/latest/config/security/understanding-the-ports/
+    environment:
+      - SSL_TYPE=letsencrypt
     ports:
       - "25:25"    # SMTP  (explicit TLS => STARTTLS, Authentication is DISABLED => use port 465/587 instead)
       - "143:143"  # IMAP4 (explicit TLS => STARTTLS)
@@ -19,6 +22,8 @@ services:
       - ./docker-data/dms/mail-logs/:/var/log/mail/
       - ./docker-data/dms/config/:/tmp/docker-mailserver/
       - /etc/localtime:/etc/localtime:ro
+      - /etc/letsencrypt:/etc/letsencrypt
+      - ./docker-data/certbot/certs/:/etc/letsencrypt
     restart: always
     stop_grace_period: 1m
     # Uncomment if using `ENABLE_FAIL2BAN=1`:
